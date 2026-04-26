@@ -1,6 +1,6 @@
 <div align="center">
 
-# ⚛️ QuantumNet — AI-Powered Quantum Error Corrector
+# QuantumNet — AI-Powered Quantum Error Corrector
 
 **Hybrid Neural Network + Ising Solver for Real-Time Quantum Noise Mitigation**
 
@@ -17,7 +17,7 @@
 
 ---
 
-## 🎯 What is This?
+## What is This?
 
 Quantum computers produce **noisy probability distributions** when measuring qubit states — real hardware noise corrupts results. **QuantumNet** corrects this noise in real-time using a 3-stage GPU-accelerated pipeline:
 
@@ -32,7 +32,7 @@ Measurement    →→→   (QuantumNet +    →→→   Solver        →→→ 
 
 ---
 
-## 📊 Benchmark Results
+## Benchmark Results
 
 Evaluated on **300 simulated 3-qubit quantum measurements** (Qiskit Aer + GPU simulator):
 
@@ -43,15 +43,15 @@ Evaluated on **300 simulated 3-qubit quantum measurements** (Qiskit Aer + GPU si
 | **QuantumNet (Ours)** | **0.000110** | **0.017734** | **0.027784** | **0.994340** |
 
 ### Key Highlights
-- 🏆 **3.5× KL Divergence reduction** over raw noisy input
-- 🏆 **Fidelity 0.9943** — near-perfect quantum state recovery  
-- 🏆 **23% MSE improvement** over raw input
-- ⚡ **152.4 samples/sec** on NVIDIA RTX 3050 (4GB VRAM)
-- ⚡ **~85 seconds** total training time on GPU
+- **3.5× KL Divergence reduction** over raw noisy input
+- **Fidelity 0.9943** — near-perfect quantum state recovery  
+- **23% MSE improvement** over raw input
+- **152.4 samples/sec** on NVIDIA RTX 3050 (4GB VRAM)
+- **~85 seconds** total training time on GPU
 
 ---
 
-## 🏗️ Architecture
+##  Architecture
 
 ### QuantumNet — Quantum Amplitude Attention
 
@@ -93,7 +93,7 @@ Generates ~40 candidate distributions → evaluates Ising energy in parallel on 
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 - Python 3.9+
@@ -170,7 +170,7 @@ quantum-error-correction-cuda/
 
 ---
 
-## 🖥️ NVIDIA Triton Deployment
+## NVIDIA Triton Deployment
 
 Export and deploy on NVIDIA Triton Inference Server:
 
@@ -196,7 +196,7 @@ python inference/triton_client.py
 
 ---
 
-## 🔬 Technical Details
+## Technical Details
 
 ### Training
 - **Loss**: Composite — 50% Fidelity + 30% MSE + 20% KL Divergence
