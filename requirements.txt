@@ -1,0 +1,18 @@
+# ── Core ────────────────────────────────────────────────────────────────────
+torch>=2.2.0               # CUDA-enabled PyTorch
+numpy>=1.26.0
+
+# ── Quantum Simulation ───────────────────────────────────────────────────────
+qiskit>=1.0.0
+qiskit-aer>=0.14.0          # CPU + GPU simulator backend
+
+# ── GPU / CUDA Utilities ─────────────────────────────────────────────────────
+cupy-cuda12x>=13.0.0        # CuPy for raw CUDA array ops (GPU simulator)
+
+# ── NVIDIA Triton Client ─────────────────────────────────────────────────────
+tritonclient[http]>=2.43.0  # Official NVIDIA Triton REST client
+requests>=2.31.0
+
+# ── Optional: ONNX Export ────────────────────────────────────────────────────
+onnx>=1.16.0
+onnxruntime-gpu>=1.18.0     # Local ONNX inference (without Triton)

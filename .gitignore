@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pth
+*.onnx
+*.pt
+data/dataset.pkl
+*.log
+*.json
+.env
+venv/
+*.egg-info/
+dist/
+build/

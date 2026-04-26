@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QuantumNet Architecture</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&family=Orbitron:wght@400;700;900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #020b12;
+    font-family: 'JetBrains Mono', monospace;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 40px 20px;
+  }
+
+  .canvas {
+    width: 1000px;
+    background: #020b12;
+    position: relative;
+    padding: 50px 40px 60px;
+  }
+
+  /* ── Title ── */
+  .title {
+    text-align: center;
+    margin-bottom: 50px;
+  }
+  .title h1 {
+    font-family: 'Orbitron', monospace;
+    font-size: 28px;
+    font-weight: 900;
+    color: #76b900;
+    letter-spacing: 4px;
+    text-shadow: 0 0 30px rgba(118,185,0,0.5);
+  }
+  .title p {
+    font-size: 12px;
+    color: #4a6a7a;
+    letter-spacing: 3px;
+    margin-top: 8px;
+    text-transform: uppercase;
+  }
+
+  /* ── Grid layout ── */
+  .diagram {
+    display: grid;
+    grid-template-columns: 160px 40px 1fr 40px 160px;
+    grid-template-rows: auto;
+    gap: 0;
+    align-items: center;
+  }
+
+  /* ── Boxes ── */
+  .box {
+    border-radius: 8px;
+    padding: 16px 14px;
+    text-align: center;
+    position: relative;
+  }
+
+  .box-input {
+    background: linear-gradient(135deg, #0a1a24, #0d2233);
+    border: 1.5px solid #1e4a6a;
+    box-shadow: 0 0 20px rgba(30,74,106,0.3);
+  }
+
+  .box-output {
+    background: linear-gradient(135deg, #0a1a0a, #0d2a0d);
+    border: 1.5px solid #2a5a1a;
+    box-shadow: 0 0 20px rgba(118,185,0,0.2);
+  }
+
+  .box-physics {
+    background: linear-gradient(135deg, #1a0a2a, #150d35);
+    border: 1.5px solid #5a2a8a;
+    box-shadow: 0 0 20px rgba(90,42,138,0.3);
+  }
+
+  .box-neural {
+    background: linear-gradient(135deg, #1a0a0a, #2a1010);
+    border: 1.5px solid #8a2a2a;
+    box-shadow: 0 0 20px rgba(138,42,42,0.3);
+  }
+
+  .box-gate {
+    background: linear-gradient(135deg, #0a1a1a, #0d2a2a);
+    border: 1.5px solid #1a6a6a;
+    box-shadow: 0 0 20px rgba(26,106,106,0.3);
+  }
+
+  .box-ising {
+    background: linear-gradient(135deg, #1a1500, #2a2000);
+    border: 1.5px solid #6a5a00;
+    box-shadow: 0 0 20px rgba(106,90,0,0.3);
+  }
+
+  .box-label {
+    font-family: 'Orbitron', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    margin-bottom: 6px;
+  }
+
+  .box-desc {
+    font-size: 9.5px;
+    color: #4a7a8a;
+    line-height: 1.6;
+    letter-spacing: 0.3px;
+  }
+
+  .box-input .box-label  { color: #4ab0e0; }
+  .box-output .box-label { color: #76b900; }
+  .box-physics .box-label{ color: #b060ff; }
+  .box-neural .box-label { color: #ff6060; }
+  .box-gate .box-label   { color: #40d0d0; }
+  .box-ising .box-label  { color: #d0b000; }
+
+  .tag {
+    display: inline-block;
+    font-size: 8px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    margin-top: 6px;
+    letter-spacing: 1px;
+    font-weight: 600;
+  }
+  .tag-blue   { background: rgba(74,176,224,0.15); color: #4ab0e0; border: 1px solid rgba(74,176,224,0.3); }
+  .tag-green  { background: rgba(118,185,0,0.15);  color: #76b900; border: 1px solid rgba(118,185,0,0.3); }
+  .tag-purple { background: rgba(176,96,255,0.15); color: #b060ff; border: 1px solid rgba(176,96,255,0.3); }
+  .tag-red    { background: rgba(255,96,96,0.15);  color: #ff6060; border: 1px solid rgba(255,96,96,0.3); }
+  .tag-cyan   { background: rgba(64,208,208,0.15); color: #40d0d0; border: 1px solid rgba(64,208,208,0.3); }
+  .tag-gold   { background: rgba(208,176,0,0.15);  color: #d0b000; border: 1px solid rgba(208,176,0,0.3); }
+
+  /* ── Arrows ── */
+  .arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #2a4a5a;
+    font-size: 22px;
+  }
+  .arrow-label {
+    font-size: 8px;
+    color: #2a4a5a;
+    letter-spacing: 1px;
+    text-align: center;
+    line-height: 1.4;
+  }
+
+  /* ── Middle column (branches) ── */
+  .middle-col {
+    grid-column: 3;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 0 10px;
+  }
+
+  .branch-row {
+    display: grid;
+    grid-template-columns: 1fr 16px 1fr 16px 1fr;
+    gap: 0;
+    align-items: center;
+  }
+
+  /* ── Fork lines ── */
+  .fork-container {
+    grid-column: 3;
+    position: relative;
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  svg.lines {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  /* ── Bottom row ── */
+  .full-row {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: 1fr 60px 1fr 60px 1fr;
+    gap: 0;
+    align-items: center;
+    margin-top: 30px;
+    padding-top: 30px;
+    border-top: 1px solid #0d2233;
+  }
+
+  .full-arrow {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    color: #2a4a5a;
+    font-size: 18px;
+  }
+
+  /* ── Metrics bar ── */
+  .metrics {
+    grid-column: 1 / -1;
+    margin-top: 40px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+
+  .metric-card {
+    background: #040f18;
+    border: 1px solid #0d2233;
+    border-radius: 6px;
+    padding: 14px;
+    text-align: center;
+  }
+
+  .metric-val {
+    font-family: 'Orbitron', monospace;
+    font-size: 20px;
+    font-weight: 700;
+    color: #76b900;
+    text-shadow: 0 0 15px rgba(118,185,0,0.4);
+  }
+
+  .metric-label {
+    font-size: 9px;
+    color: #2a5a6a;
+    letter-spacing: 2px;
+    margin-top: 4px;
+    text-transform: uppercase;
+  }
+
+  /* ── GPU badge ── */
+  .gpu-badge {
+    grid-column: 1 / -1;
+    margin-top: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 12px 20px;
+    background: rgba(118,185,0,0.05);
+    border: 1px solid rgba(118,185,0,0.2);
+    border-radius: 6px;
+  }
+
+  .gpu-badge .nvidia {
+    font-family: 'Orbitron', monospace;
+    font-size: 13px;
+    font-weight: 900;
+    color: #76b900;
+    letter-spacing: 2px;
+  }
+
+  .gpu-badge .detail {
+    font-size: 10px;
+    color: #4a6a5a;
+    letter-spacing: 1px;
+  }
+
+  .dot { color: #2a4a3a; margin: 0 4px; }
+
+  /* overall layout wrapper */
+  .main-flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    width: 100%;
+  }
+
+  .col-input  { width: 150px; flex-shrink: 0; }
+  .col-arrow  { width: 50px;  flex-shrink: 0; display: flex; flex-direction: column; align-items: center; }
+  .col-middle { flex: 1; }
+  .col-output { width: 150px; flex-shrink: 0; }
+
+  .branches {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    position: relative;
+  }
+
+  .branch-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .branch-box { flex: 1; }
+
+  .mini-arrow {
+    color: #2a4a5a;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  .connector-v {
+    width: 2px;
+    background: linear-gradient(to bottom, #5a2a8a, #8a2a2a);
+    height: 30px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    font-size: 9px;
+    color: #2a4a5a;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-align: center;
+    margin-bottom: 8px;
+  }
+</style>
+</head>
+<body>
+<div class="canvas">
+
+  <!-- Title -->
+  <div class="title">
+    <h1>QUANTUMNET — ARCHITECTURE</h1>
+    <p>Physics-Neural Hybrid · Quantum Error Correction · CUDA Accelerated</p>
+  </div>
+
+  <!-- Main flow -->
+  <div style="display:flex; align-items:stretch; gap:0; width:100%;">
+
+    <!-- INPUT -->
+    <div style="width:155px; flex-shrink:0; display:flex; align-items:center;">
+      <div class="box box-input" style="width:100%;">
+        <div class="box-label">NOISY INPUT</div>
+        <div class="box-desc">
+          3-qubit measurement<br>
+          8-dim probability<br>
+          distribution
+        </div>
+        <div style="margin-top:10px;">
+          <div class="tag tag-blue">NISQ DEVICE</div>
+        </div>
+        <div style="margin-top:8px; font-size:9px; color:#1e4a6a;">
+          p̃ = (1-λ)p + λ·u
+        </div>
+      </div>
+    </div>
+
+    <!-- Arrow 1 -->
+    <div style="width:44px; flex-shrink:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;">
+      <div style="color:#1e4a6a; font-size:18px;">→</div>
+      <div style="font-size:8px; color:#1e4a6a; letter-spacing:1px; text-align:center;">noisy<br>dist</div>
+    </div>
+
+    <!-- MIDDLE: two branches + gate -->
+    <div style="flex:1; display:flex; flex-direction:column; gap:0;">
+
+      <div class="section-label">STAGE 1 — DUAL BRANCH CORRECTION</div>
+
+      <!-- Branch container -->
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; position:relative;">
+
+        <!-- Physics branch -->
+        <div class="box box-physics">
+          <div class="box-label">⚛ PHYSICS BRANCH</div>
+          <div class="box-desc">
+            Estimates noise level λ<br>
+            Inverts depolarizing:<br>
+            <span style="color:#7a40aa; font-size:9px;">p = (p̃ − λ/8) / (1−λ)</span><br><br>
+            Noise Estimator MLP<br>
+            32 → 16 → 1 (sigmoid)
+          </div>
+          <div style="margin-top:8px;">
+            <div class="tag tag-purple">PHYSICS-INFORMED</div>
+          </div>
+        </div>
+
+        <!-- Neural branch -->
+        <div class="box box-neural">
+          <div class="box-label">🧠 NEURAL BRANCH</div>
+          <div class="box-desc">
+            Deep residual correction<br>
+            Embed: 8→256, GELU<br>
+            4× ResBlock (256→512→256)<br>
+            LayerNorm at each block<br>
+            Head: 256→64→8
+          </div>
+          <div style="margin-top:8px;">
+            <div class="tag tag-red">LEARNED RESIDUALS</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Down arrows -->
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:8px 0;">
+        <div style="text-align:center; color:#5a2a8a; font-size:14px;">↓</div>
+        <div style="text-align:center; color:#8a2a2a; font-size:14px;">↓</div>
+      </div>
+
+      <!-- Gate -->
+      <div class="box box-gate">
+        <div class="box-label" style="font-size:12px;">⚖ ADAPTIVE GATING NETWORK</div>
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-top:10px;">
+          <div style="font-size:9px; color:#1a6060; text-align:center;">
+            Input: concat<br>[noisy + phys + neural]<br>24-dim → 32 → 1
+          </div>
+          <div style="font-size:9px; color:#40d0d0; text-align:center;">
+            α = sigmoid(gate)<br><br>
+            <span style="font-size:10px; color:#20a0a0;">out = α·physics<br>+ (1−α)·neural</span>
+          </div>
+          <div style="font-size:9px; color:#1a6060; text-align:center;">
+            Learns: when physics<br>is reliable vs when<br>neural wins
+          </div>
+        </div>
+        <div style="margin-top:8px; text-align:center;">
+          <div class="tag tag-cyan">ADAPTIVE FUSION</div>
+        </div>
+      </div>
+
+      <!-- Arrow to stage 2 -->
+      <div style="display:flex; align-items:center; gap:8px; margin:10px 0 6px;">
+        <div style="flex:1; height:1px; background:linear-gradient(to right, transparent, #1a6a6a);"></div>
+        <div style="font-size:9px; color:#1a6a6a; letter-spacing:2px;">STAGE 2 — PHYSICAL REFINEMENT</div>
+        <div style="flex:1; height:1px; background:linear-gradient(to left, transparent, #1a6a6a);"></div>
+      </div>
+
+      <!-- Ising solver -->
+      <div class="box box-ising">
+        <div class="box-label">⚡ CUDA ISING SOLVER</div>
+        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:8px;">
+          <div style="font-size:9px; color:#6a5000;">
+            Hypercube coupling<br>J(i,j) = 1/Hamming²<br>3-qubit topology
+          </div>
+          <div style="font-size:9px; color:#d0b000; text-align:center;">
+            ~40 candidates<br>GPU parallel eval<br>Energy: E=−x·J·xᵀ
+          </div>
+          <div style="font-size:9px; color:#6a5000; text-align:right;">
+            Entropy gate:<br>accept if lower<br>entropy than input
+          </div>
+        </div>
+        <div style="margin-top:8px; text-align:center;">
+          <div class="tag tag-gold">RTX 3050 · CUDA 13.2</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Arrow 2 -->
+    <div style="width:44px; flex-shrink:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;">
+      <div style="color:#2a5a1a; font-size:18px;">→</div>
+      <div style="font-size:8px; color:#2a5a1a; letter-spacing:1px; text-align:center;">clean<br>dist</div>
+    </div>
+
+    <!-- OUTPUT -->
+    <div style="width:155px; flex-shrink:0; display:flex; align-items:center;">
+      <div class="box box-output" style="width:100%;">
+        <div class="box-label">CLEAN OUTPUT</div>
+        <div class="box-desc">
+          Denoised 3-qubit<br>probability distribution<br>
+          Σ pᵢ = 1.0
+        </div>
+        <div style="margin-top:10px;">
+          <div class="tag tag-green">CORRECTED</div>
+        </div>
+        <div style="margin-top:8px; font-size:9px; color:#2a5a1a;">
+          Fidelity: 0.9943
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Metrics -->
+  <div class="metrics" style="margin-top:30px;">
+    <div class="metric-card">
+      <div class="metric-val">3.5×</div>
+      <div class="metric-label">KL Div Reduction</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-val">0.9943</div>
+      <div class="metric-label">Fidelity Score</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-val">152/s</div>
+      <div class="metric-label">Throughput</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-val">85s</div>
+      <div class="metric-label">Training Time</div>
+    </div>
+  </div>
+
+  <!-- GPU Badge -->
+  <div class="gpu-badge" style="margin-top:20px;">
+    <span class="nvidia">NVIDIA</span>
+    <span class="dot">·</span>
+    <span class="detail">GeForce RTX 3050</span>
+    <span class="dot">·</span>
+    <span class="detail">CUDA 13.2</span>
+    <span class="dot">·</span>
+    <span class="detail">PyTorch 2.2 + AMP</span>
+    <span class="dot">·</span>
+    <span class="detail">Qiskit Aer</span>
+    <span class="dot">·</span>
+    <span class="detail">Triton Ready</span>
+  </div>
+
+</div>
+</body>
+</html>

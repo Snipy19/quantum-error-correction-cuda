@@ -1,0 +1,56 @@
+# ───────────────────────────────────────────────────────────────────────────
+# NVIDIA Triton Inference Server — QuantumNet Model Config
+# Model: quantum_model
+# Backend: pytorch_libtorch
+# ───────────────────────────────────────────────────────────────────────────
+
+name: "quantum_model"
+backend: "pytorch_libtorch"
+max_batch_size: 128
+
+input [
+  {
+    name: "INPUT__0"
+    data_type: TYPE_FP32
+    dims: [ 8 ]
+  }
+]
+
+output [
+  {
+    name: "OUTPUT__0"
+    data_type: TYPE_FP32
+    dims: [ 8 ]
+  }
+]
+
+dynamic_batching {
+  preferred_batch_size: [ 32, 64, 128 ]
+  max_queue_delay_microseconds: 2000
+}
+
+instance_group [
+  {
+    count: 1
+    kind: KIND_GPU
+    gpus: [ 0 ]
+  }
+]
+
+optimization {
+  execution_accelerators {
+    gpu_execution_accelerator [
+      {
+        name: "tensorrt"
+        parameters {
+          key: "precision_mode"
+          value: "FP16"
+        }
+        parameters {
+          key: "max_workspace_size_bytes"
+          value: "1073741824"
+        }
+      }
+    ]
+  }
+}
